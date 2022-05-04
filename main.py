@@ -104,23 +104,23 @@ def make_clips(lines, clips_folder):
             line = line.strip()
             line = line.split(',')
             name = line[0]
+            player_folder = clips_folder / name
             clip_label[name] += 1
+            if clip_label[name] == 1:
+                # make directory for the name 
+                player_folder.mkdir(exist_ok=True)
+
             strt_min, strt_sec = [int(x) for x in line[1].split(":")]
             strt_time = strt_min*60 + strt_sec
             stp_min, stp_sec = [int(x) for x in line[2].split(":")]
             stp_time = stp_min*60 + stp_sec
             filename = Path(name + str(clip_label[name]) + video_name)
-            file_save_path = clips_folder / filename
-            timestep(video_name, strt_time, stp_time, str(filename))
+            file_save_path = player_folder / filename
+            timestep(video_name, strt_time, stp_time, str(file_save_path))
 
 
 
 def main():
-    #vid_path = "Riya sings song.AVI"
-    #vid_clip = "clip.avi"
-    #clip = VideoFileClip(vid_path).cutout(0, 7)
-    #clip.write_videofile(vid_clip, codec='mpeg4')
-    #ffmpeg_extract_subclip(vid_path, 0, 5, targetname=vid_clip)
     # by default save the clips to the folder containing the repo
     save_directory = Path(__file__).parent.parent
     # by default use the clips txt file sitting next to main.py
