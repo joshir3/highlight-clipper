@@ -8,6 +8,11 @@ import re
 from pathlib import Path
 # monkey patch cipher.py
 
+
+# could not find match for multiple
+
+
+
 def get_throttling_function_name(js: str) -> str:
     """Extract the name of the function that computes the throttling parameter.
     :param str js:
@@ -24,20 +29,34 @@ def get_throttling_function_name(js: str) -> str:
         # a.C && (b = a.get("n")) && (b = Bpa[0](b), a.set("n", b),
         # Bpa.length || iha("")) }};
         # In the above case, `iha` is the relevant function name
+        r'a\.[a-zA-Z]\s*&&\s*\([a-z]\s*=\s*a\.get\("n"\)\)\s*&&\s*'
+        #r'\([a-z]\s*=\s*([a-zA-Z0-9$]{3})(\[\d+\])?\([a-z]\)',
+        r'\([a-z]\s*=\s*([a-zA-Z0-9$]{2,3})(\[\d+\])?\([a-z]\)',
+        #r'a\.[a-zA-Z]\s*&&\s*\([a-z]\s*=\s*a\.get\("n"\)\)\s*&&\s*\([a-z]\s*=\s*([a-zA-Z0-9$]{2,3})(\[\d+\])?\([a-z]\)'
 
-        r'a\.[a-zA-Z]\s*&&\s*\([a-z]\s*=\s*a\.get\("n"\)\)\s*&&\s*',
-r'\([a-z]\s*=\s*([a-zA-Z0-9$]{2,3})(\[\d+\])?\([a-z]\)'
+
+
+
 
     ]
-    print("fuck")
-    print(js)
+    # print("fuck")
+    #a\.[a-zA-Z]\s*&&\s*\([a-z]\s*=\s*a\.get\("n"\)\)\s*&&\s*
+    #print(js)
+    matches = []
+    def penis(matches):
+        for tup in matches:
+            print(f"The regex {tup[0]} had a match!")
+            print(f"The match is {tup[1].groups()}")
+            #print(f"The groups associated with this match are {tup[1].groups()}")
+
     for pattern in function_patterns:
         regex = re.compile(pattern)
         function_match = regex.search(js)
         if function_match:
+            print("finished regex search, matched: {pattern}")
             if len(function_match.groups()) == 1:
                 return function_match.group(1)
-            idx = function_match.group(1)
+            idx = function_match.group(2)
             if idx:
                 idx = idx.strip("[]")
                 array = re.search(
